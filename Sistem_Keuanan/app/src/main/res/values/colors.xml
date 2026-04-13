@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_green">#219653</color>
+    <color name="income_green">#1B8A50</color>
+    <color name="expense_red">#EB5757</color>
+    <color name="transparent_black">#33000000</color>
+    <color name="surface">#F8F8FA</color>
+    <color name="card_background">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

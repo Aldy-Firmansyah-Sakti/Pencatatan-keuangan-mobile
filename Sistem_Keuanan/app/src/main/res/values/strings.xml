@@ -1,0 +1,28 @@
+﻿<resources>
+    <string name="app_name">Sistem Keuangan</string>
+    <string name="total_balance">Total Saldo</string>
+    <string name="balance_amount">Rp 5.450.000</string>
+    <string name="this_month_income">Bulan Ini\nPemasukan</string>
+    <string name="income_amount">Rp 3.200.000</string>
+    <string name="this_month_expenses">Bulan Ini\nPengeluaran</string>
+    <string name="expense_amount">Rp 1.850.000</string>
+    <string name="recent_transactions">Transaksi Terbaru</string>
+    <string name="add">Tambah</string>
+    <string name="expense">Pengeluaran</string>
+    <string name="income">Pemasukan</string>
+    <string name="amount_hint">Rp 0</string>
+    <string name="category_label">Kategori</string>
+    <string name="date_hint">Hari ini, 25 Okt 2023</string>
+    <string name="add_note_hint">Tambahkan Catatan (opsional)</string>
+    <string name="save">Simpan</string>
+    <string name="cancel">Batal</string>
+    <string name="category_food">Makanan</string>
+    <string name="category_shopping">Belanja</string>
+    <string name="category_transport">Transport</string>
+    <string name="category_house">Rumah</string>
+    <string name="category_health">Kesehatan</string>
+    <string name="category_entertainment">Hiburan</string>
+    <string name="category_education">Pendidikan</string>
+    <string name="category_bills">Tagihan</string>
+    <string name="category_custom">Kustom</string>
+</resources>
