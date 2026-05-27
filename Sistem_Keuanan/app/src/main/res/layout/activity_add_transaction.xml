@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -106,6 +106,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
+                    android:digits="0123456789."
+                    android:maxLength="15"
                     android:textSize="28sp"
                     android:textStyle="bold" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -133,6 +135,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:icon="@drawable/makanan"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_food"
                     android:textSize="12sp" />
 
@@ -143,6 +148,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
+                    app:icon="@drawable/belanja"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_shopping"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -160,6 +168,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:icon="@drawable/transportasi"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_transport"
                     android:textSize="12sp" />
 
@@ -170,6 +181,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
+                    app:icon="@drawable/rumah"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_house"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -187,6 +201,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:icon="@drawable/kesehatan"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_health"
                     android:textSize="12sp" />
 
@@ -197,6 +214,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
+                    app:icon="@drawable/hiburan"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_entertainment"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -214,6 +234,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    app:icon="@drawable/pendidikan"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_education"
                     android:textSize="12sp" />
 
@@ -224,6 +247,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
+                    app:icon="@drawable/tagihan"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
                     android:text="@string/category_bills"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -235,6 +261,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                app:icon="@drawable/bebas"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
                 android:text="@string/category_custom"
                 android:textSize="12sp" />
 

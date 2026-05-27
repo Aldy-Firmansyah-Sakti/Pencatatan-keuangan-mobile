@@ -5,9 +5,9 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
@@ -16,6 +16,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -23,6 +25,7 @@ class AddTransactionActivity : AppCompatActivity() {
     private var selectedCategory = "Makanan"
     private var isExpense = true
     private var editingTransaction: Transaction? = null
+    private lateinit var transactionStore: TransactionStore
 
     // All category buttons tracked for highlight reset
     private val categoryButtonIds = listOf(
@@ -33,7 +36,7 @@ class AddTransactionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_add_transaction)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.add_main)) { v, insets ->
@@ -44,6 +47,8 @@ class AddTransactionActivity : AppCompatActivity() {
 
         // Check if editing existing transaction
         editingTransaction = intent.getSerializableExtra("transaction") as? Transaction
+
+        transactionStore = TransactionStore(this)
 
         try {
             setupUI()
@@ -145,21 +150,37 @@ class AddTransactionActivity : AppCompatActivity() {
             override fun afterTextChanged(s: android.text.Editable?) {
                 if (isEditing || s == null) return
                 isEditing = true
-                val raw = s.toString().replace("[^\\d]".toRegex(), "")
-                if (raw.isNotEmpty()) {
-                    try {
-                        val number = raw.toLong()
-                        val syms = java.text.DecimalFormatSymbols().apply {
+                try {
+                    val raw = s.toString().replace("[^\\d]".toRegex(), "")
+                    if (raw.isNotEmpty()) {
+                        val number = raw.toLongOrNull() ?: 0L
+                        val syms = DecimalFormatSymbols().apply {
                             groupingSeparator = '.'
                             decimalSeparator = ','
                         }
-                        val formatted = java.text.DecimalFormat("#,###", syms).format(number)
+                        val formatter = (java.text.NumberFormat.getInstance(Locale("id")) as DecimalFormat).apply {
+                            decimalFormatSymbols = syms
+                            isGroupingUsed = true
+                            groupingSize = 3
+                            maximumFractionDigits = 0
+                        }
+                        val formatted = formatter.format(number)
                         if (formatted != s.toString()) {
                             s.replace(0, s.length, formatted)
+                            nominalInput.setSelection(formatted.length.coerceAtMost(nominalInput.text?.length ?: formatted.length))
                         }
-                    } catch (_: NumberFormatException) {}
+                    } else if (s.isNotEmpty()) {
+                        s.clear()
+                    }
+                } catch (e: Exception) {
+                    // Fallback when formatting fails; keep plain digits only
+                    val digitsOnly = s.toString().replace("[^\\d]".toRegex(), "")
+                    if (digitsOnly != s.toString()) {
+                        s.replace(0, s.length, digitsOnly)
+                    }
+                } finally {
+                    isEditing = false
                 }
-                isEditing = false
             }
         })
 
@@ -182,9 +203,9 @@ class AddTransactionActivity : AppCompatActivity() {
                     date = dateText
                 )
                 if (editing != null) {
-                    TransactionStore.delete(this, editing.id)
+                    transactionStore.deleteSync(editing.id)
                 }
-                TransactionStore.add(this, transaction)
+                transactionStore.addSync(transaction)
             }
             setResult(RESULT_OK)
             finish()

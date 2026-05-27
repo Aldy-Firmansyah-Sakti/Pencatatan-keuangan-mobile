@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context=".ReportActivity">
 
     <TextView
@@ -20,6 +22,39 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/filter_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/report_title">
+
+        <TextView
+            android:id="@+id/tv_selected_month"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Bulan Ini"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/month_picker_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Bulan"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="0dp"
@@ -69,13 +104,11 @@
                         android:textSize="12sp"
                         android:layout_marginTop="8dp" />
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="match_parent"
-                        android:layout_height="140dp"
-                        android:layout_marginTop="16dp"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/primary_green" />
+                    <com.example.sistem_keuanan.CategoryPieChartView
+                            android:id="@+id/pie_chart_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="220dp"
+                            android:layout_marginTop="16dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -187,18 +220,88 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tv_week_performance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="+ 15% dari minggu lalu"
                         android:textColor="@color/income_green"
-                        android:textSize="12sp"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
                         android:layout_marginTop="8dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Minggu Ini"
+                                android:textSize="11sp"
+                                android:textColor="#888888" />
+                            <TextView
+                                android:id="@+id/tv_week_current"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Minggu Lalu"
+                                android:textSize="11sp"
+                                android:textColor="#888888" />
+                            <TextView
+                                android:id="@+id/tv_week_last"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/black"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Progress bar visual -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pengeluaran minggu ini"
+                        android:textSize="11sp"
+                        android:textColor="#888888"
+                        android:layout_marginTop="12dp" />
+                    <ProgressBar
+                        android:id="@+id/progress_week"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_marginTop="4dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressTint="@color/primary_green"
+                        android:progressBackgroundTint="#E0E0E0" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/surface">
@@ -212,17 +315,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Kategori Teratas"
+                        android:text="Kategori Teratas (Pengeluaran)"
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/tv_top_categories"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Makanan, Transportasi, Hiburan"
-                        android:textColor="@color/black"
-                        android:textSize="12sp"
+                        android:orientation="vertical"
                         android:layout_marginTop="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -239,6 +341,7 @@
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:clipChildren="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -257,7 +360,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Beranda"
                 android:src="@drawable/home_icon"
-                android:tint="@color/navigation_icon_color" />
+                app:tint="@color/navigation_icon_color" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -282,7 +385,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Transaksi"
                 android:src="@drawable/money_icon"
-                android:tint="@color/navigation_icon_color" />
+                app:tint="@color/navigation_icon_color" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -291,6 +394,41 @@
                 android:text="Transaksi"
                 android:textColor="@color/navigation_text_color"
                 android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- FAB Add Button (center) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clipChildren="false">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_transaction_button"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:backgroundTint="@color/primary_green"
+                android:elevation="12dp"
+                android:text=""
+                android:translationY="-16dp"
+                android:translationZ="12dp"
+                app:cornerRadius="28dp"
+                app:icon="@drawable/ic_add"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="24dp"
+                app:iconTint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tambah"
+                android:textColor="@color/navigation_text_color"
+                android:textSize="11sp"
+                android:translationY="-16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -307,7 +445,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Laporan"
                 android:src="@drawable/report_icon"
-                android:tint="@color/navigation_icon_color" />
+                app:tint="@color/navigation_icon_color" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -332,7 +470,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Profil"
                 android:src="@drawable/profile_icon"
-                android:tint="@color/navigation_icon_color" />
+                app:tint="@color/navigation_icon_color" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -343,20 +481,5 @@
                 android:textSize="11sp" />
         </LinearLayout>
     </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/add_transaction_button"
-        style="@style/Widget.MaterialComponents.Button"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/primary_green"
-        app:cornerRadius="32dp"
-        android:text="+"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_nav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

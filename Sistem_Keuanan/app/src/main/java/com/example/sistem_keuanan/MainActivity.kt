@@ -20,6 +20,8 @@ import java.text.DecimalFormatSymbols
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var transactionStore: TransactionStore
+
     private val detailLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { loadRecentTransactions() }
@@ -32,6 +34,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        transactionStore = TransactionStore(this)
+
+        findViewById<MaterialButton>(R.id.add_transaction_button)?.apply {
+            bringToFront()
+            ViewCompat.setElevation(this, 12f)
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -46,15 +55,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        findViewById<MaterialButton>(R.id.add_transaction_button)?.apply {
+            bringToFront()
+            ViewCompat.setElevation(this, 12f)
+        }
         updateSummary()
         loadRecentTransactions()
     }
 
     private fun updateSummary() {
-        val all = TransactionStore.getAll(this)
+        val all = transactionStore.getAllSync()
         val fmt = buildFormatter()
 
-        // Bulan ini saja
         val cal = java.util.Calendar.getInstance()
         val thisMonth = cal.get(java.util.Calendar.MONTH)
         val thisYear  = cal.get(java.util.Calendar.YEAR)
@@ -74,9 +86,11 @@ class MainActivity : AppCompatActivity() {
         val balance      = all.filter { !it.isExpense }.sumOf { it.amount } -
                            all.filter {  it.isExpense }.sumOf { it.amount }
 
-        findViewById<android.widget.TextView>(R.id.tv_total_balance).text = "Rp ${fmt.format(balance)}"
-        findViewById<android.widget.TextView>(R.id.tv_home_income).text   = "Rp ${fmt.format(totalIncome)}"
-        findViewById<android.widget.TextView>(R.id.tv_home_expense).text  = "Rp ${fmt.format(totalExpense)}"
+        try {
+            findViewById<android.widget.TextView>(R.id.tv_total_balance)?.text = "Rp ${fmt.format(balance)}"
+            findViewById<android.widget.TextView>(R.id.tv_home_income)?.text   = "Rp ${fmt.format(totalIncome)}"
+            findViewById<android.widget.TextView>(R.id.tv_home_expense)?.text  = "Rp ${fmt.format(totalExpense)}"
+        } catch (_: Exception) {}
     }
 
     private fun buildFormatter(): java.text.DecimalFormat {
@@ -90,7 +104,14 @@ class MainActivity : AppCompatActivity() {
         val container = findViewById<LinearLayout>(R.id.recent_transaction_list) ?: return
         container.removeAllViews()
 
-        val list = TransactionStore.getAll(this).take(5)
+        val sdf = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id"))
+        val todayStr = sdf.format(java.util.Date())
+
+        // Semua transaksi hari ini, terbaru di atas
+        val list = transactionStore.getAllSync()
+            .filter { it.date == todayStr }
+            .sortedByDescending { it.id }
+
         val dp = resources.displayMetrics.density
         val symbols = DecimalFormatSymbols().apply {
             groupingSeparator = '.'; decimalSeparator = ','
@@ -99,19 +120,27 @@ class MainActivity : AppCompatActivity() {
 
         if (list.isEmpty()) {
             val tv = TextView(this).apply {
-                text = "Belum ada transaksi."
+                text = "Belum ada transaksi hari ini."
                 textSize = 13f
                 setTextColor(0xFFAAAAAA.toInt())
-                setPadding(0, (8 * dp).toInt(), 0, 0)
+                gravity = android.view.Gravity.CENTER
+                setPadding(0, (16 * dp).toInt(), 0, 0)
             }
             container.addView(tv)
             return
         }
 
-        val categoryEmoji = mapOf(
-            "Makanan" to "🍔", "Belanja" to "🛍", "Transport" to "🚗",
-            "Rumah" to "🏠", "Kesehatan" to "💊", "Hiburan" to "🎮",
-            "Pendidikan" to "📚", "Tagihan" to "📄", "Kustom" to "✏️"
+        val categoryDrawable = mapOf(
+            "Makanan" to R.drawable.makanan,
+            "Belanja" to R.drawable.belanja,
+            "Transport" to R.drawable.transportasi,
+            "Transportasi" to R.drawable.transportasi,
+            "Rumah" to R.drawable.rumah,
+            "Kesehatan" to R.drawable.kesehatan,
+            "Hiburan" to R.drawable.hiburan,
+            "Pendidikan" to R.drawable.pendidikan,
+            "Tagihan" to R.drawable.tagihan,
+            "Kustom" to R.drawable.bebas
         )
 
         for (t in list) {
@@ -134,19 +163,18 @@ class MainActivity : AppCompatActivity() {
                 setPadding((16 * dp).toInt(), (16 * dp).toInt(), (16 * dp).toInt(), (16 * dp).toInt())
             }
 
-            // Icon circle
-            val icon = TextView(this).apply {
-                text = categoryEmoji[t.category] ?: "💳"
-                textSize = 18f
-                gravity = android.view.Gravity.CENTER
+            val icon = android.widget.ImageView(this).apply {
+                setImageResource(categoryDrawable[t.category] ?: R.drawable.bebas)
                 layoutParams = LinearLayout.LayoutParams((44 * dp).toInt(), (44 * dp).toInt()).also {
                     it.marginEnd = (12 * dp).toInt()
                 }
-                setBackgroundResource(R.drawable.circle_background)
+                background = resources.getDrawable(R.drawable.circle_background, null)
                 backgroundTintList = android.content.res.ColorStateList.valueOf(
                     if (t.isExpense) resources.getColor(R.color.expense_red, null)
                     else resources.getColor(R.color.income_green, null)
                 )
+                scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+                setPadding((8 * dp).toInt(), (8 * dp).toInt(), (8 * dp).toInt(), (8 * dp).toInt())
             }
 
             val textCol = LinearLayout(this).apply {
@@ -231,8 +259,8 @@ class MainActivity : AppCompatActivity() {
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             
-            // Reports (index 2)
-            bottomNav.getChildAt(2).setOnClickListener { view ->
+            // Reports (index 3)
+            bottomNav.getChildAt(3).setOnClickListener { view ->
                 doVibrate(vibrator, 20)
                 playButtonClickAnimation(view)
                 startActivity(Intent(this, ReportActivity::class.java))
@@ -240,8 +268,8 @@ class MainActivity : AppCompatActivity() {
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
             
-            // Profile (index 3)
-            bottomNav.getChildAt(3).setOnClickListener { view ->
+            // Profile (index 4)
+            bottomNav.getChildAt(4).setOnClickListener { view ->
                 doVibrate(vibrator, 20)
                 playButtonClickAnimation(view)
                 startActivity(Intent(this, ProfileActivity::class.java))

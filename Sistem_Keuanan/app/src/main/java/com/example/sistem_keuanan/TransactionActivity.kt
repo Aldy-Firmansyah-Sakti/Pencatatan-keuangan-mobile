@@ -26,6 +26,7 @@ class TransactionActivity : AppCompatActivity() {
 
     private var activeFilter = 0       // 0=semua, 1=pengeluaran, 2=pemasukan
     private var filterDate: String? = null
+    private lateinit var transactionStore: TransactionStore
 
     private lateinit var adapter: TransactionAdapter
 
@@ -42,11 +43,18 @@ class TransactionActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_transaction)
 
+        findViewById<MaterialButton>(R.id.add_transaction_button)?.apply {
+            bringToFront()
+            ViewCompat.setElevation(this, 12f)
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.transaction_main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        transactionStore = TransactionStore(this)
 
         setupRecyclerView()
         setupFilters()
@@ -56,6 +64,10 @@ class TransactionActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        findViewById<MaterialButton>(R.id.add_transaction_button)?.apply {
+            bringToFront()
+            ViewCompat.setElevation(this, 12f)
+        }
         loadTransactions()
     }
 
@@ -134,7 +146,7 @@ class TransactionActivity : AppCompatActivity() {
     }
 
     private fun loadTransactions() {
-        val all = TransactionStore.getAll(this)
+        val all = transactionStore.getAllSync()
 
         val byType = when (activeFilter) {
             1 -> all.filter { it.isExpense }
@@ -218,13 +230,13 @@ class TransactionActivity : AppCompatActivity() {
             bottomNav.getChildAt(1).setOnClickListener { view ->
                 doVibrate(vibrator, 20); playButtonClickAnimation(view)
             }
-            bottomNav.getChildAt(2).setOnClickListener { view ->
+            bottomNav.getChildAt(3).setOnClickListener { view ->
                 doVibrate(vibrator, 20); playButtonClickAnimation(view)
                 startActivity(Intent(this, ReportActivity::class.java))
                 finish()
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
-            bottomNav.getChildAt(3).setOnClickListener { view ->
+            bottomNav.getChildAt(4).setOnClickListener { view ->
                 doVibrate(vibrator, 20); playButtonClickAnimation(view)
                 startActivity(Intent(this, ProfileActivity::class.java))
                 finish()

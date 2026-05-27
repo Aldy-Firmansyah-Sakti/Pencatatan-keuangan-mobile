@@ -14,6 +14,8 @@ import java.text.DecimalFormatSymbols
 
 class TransactionDetailActivity : AppCompatActivity() {
 
+    private lateinit var transactionStore: TransactionStore
+
     private val editLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -38,6 +40,8 @@ class TransactionDetailActivity : AppCompatActivity() {
             finish(); return
         }
 
+        transactionStore = TransactionStore(this)
+
         bindData(transaction)
 
         findViewById<android.widget.ImageView>(R.id.btn_back).setOnClickListener { finish() }
@@ -50,7 +54,7 @@ class TransactionDetailActivity : AppCompatActivity() {
         }
 
         findViewById<MaterialButton>(R.id.btn_delete).setOnClickListener {
-            TransactionStore.delete(this, transaction.id)
+            transactionStore.deleteSync(transaction.id)
             setResult(RESULT_OK)
             finish()
         }
